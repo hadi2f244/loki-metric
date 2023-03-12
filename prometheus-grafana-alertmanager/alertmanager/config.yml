@@ -1,0 +1,13 @@
+global:
+
+route:
+  group_by: [team]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 24h
+  receiver: 'pager'
+
+receivers:
+    - name: 'pager'
+      webhook_configs:
+      - url: https://ngrok.io # replace with your PagerTree webhook url

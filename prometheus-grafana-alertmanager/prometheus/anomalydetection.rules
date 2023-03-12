@@ -1,0 +1,32 @@
+groups:
+  - name: NginxErrorRate
+    rules:
+      - record: nginx:errors:rate5m
+        expr: sum by (instance) (nginx:raw_errors:rate5m or up*0)
+      - record: nginx:errors:rate5m:avg_over_time_1w
+        expr: avg_over_time(nginx:errors:rate5m[1w])
+      - record: nginx:errors:rate5m:stddev_over_time_1w
+        expr: stddev_over_time(nginx:errors:rate5m[1w])
+      - record: nginx:errors:rate5m:zscore
+        expr: |
+          (nginx:errors:rate5m - nginx:errors:rate5m:avg_over_time_1w) / nginx:errors:rate5m:stddev_over_time_1w
+
+  - name: NginxErrorAnomalyDetectionThreshold
+    rules:
+      - alert: NginxErrorAnomalyDetectionThreshold
+        annotations:
+          message: "Abnormal nginx errors in {{ $labels.instance }} (threshold method)"
+        expr: avg_over_time(nginx:errors:rate5m[15m]) > 50
+        for: 5m
+        labels:
+          severity: critical
+
+  - name: NginxErrorAnommalyDetectionZscore
+    rules:
+      - alert: NginxErrorAnommalyDetectionZscore
+        annotations:
+          message: "Abnormal nginx errors in {{ $labels.instance }} (zscore method)"
+        expr: abs(nginx:errors:rate5m:zscore) > 3
+        for: 5m
+        labels:
+          severity: critical

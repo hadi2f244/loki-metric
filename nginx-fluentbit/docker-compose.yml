@@ -1,0 +1,20 @@
+version: "3"
+
+volumes:
+    nginx_data: {}
+
+services:
+  fluentbit:
+    hostname: fluentbit
+    image: fluent/fluent-bit:2.0.8-debug
+    volumes:
+      - "./config/fluent-bit:/fluent-bit/etc/"
+      - nginx_data:/var/log/nginx/
+  nginx:
+    image: nginx
+    ports:
+      - 8000:80
+    volumes:
+      - nginx_data:/var/log/nginx/
+      - ./config/nginx/default.conf:/etc/nginx/conf.d/default.conf
+

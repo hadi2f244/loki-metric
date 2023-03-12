@@ -1,0 +1,64 @@
+groups:
+
+- name: example
+  rules:
+
+  - alert: test_service_down_1
+    expr: time() - container_last_seen{name="demo-test-service-1-1"} > 10
+    for: 3s
+    labels:
+      owner: noc
+    annotations:
+      summary: "demo-test-service-1 is down!"
+      description: "demo-test-service-1 is down!"
+
+
+  - alert: test_service_down_1
+    expr: time() - container_last_seen{name="demo-test-service-1-1"} > 10
+    for: 3s
+    labels:
+      severity: warning
+      team: infra
+    annotations:
+      summary: "demo-test-service-1 is down!"
+      description: "demo-test-service-1 is down!"
+
+  - alert: test_service_down_2
+    expr: time() - container_last_seen{name="demo-test-service-2-1"} > 10
+    for: 3s
+    labels:
+      severity: critical
+      team: infra
+    annotations:
+      summary: "demo-test-service-2 is down!"
+      description: "demo-test-service-2 is down!"
+
+  - alert: test_service_down_3
+    expr: time() - container_last_seen{name="demo-test-service-3-1"} > 10
+    for: 3s
+    labels:
+      severity: warning
+      team: backend
+    annotations:
+      summary: "demo-test-service-3 is down!"
+      description: "demo-test-service-3 is down!"
+
+  - alert: test_service_down_4
+    expr: time() - container_last_seen{name="demo-test-service-4-1"} > 10
+    for: 3s
+    labels:
+      severity: critical
+      team: backend
+    annotations:
+      summary: "demo-test-service-4 is down!"
+      description: "demo-test-service-4 is down!"
+
+  - alert: test_service_down_5
+    expr: time() - container_last_seen{name="demo-test-service-5-1"} > 10
+    for: 3s
+    labels:
+      severity: critical
+      team: frontend
+    annotations:
+      summary: "demo-test-service-5 is down!"
+      description: "demo-test-service-5 is down!"

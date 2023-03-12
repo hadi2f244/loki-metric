@@ -1,0 +1,8 @@
+groups:
+  - name: NginxErrorRate
+    interval: 1m
+    rules:
+      - record: nginx:raw_access:rate5m
+        expr: sum(rate({job="fluentbit", log_type="access"}[5m])) by (instance)
+      - record: nginx:raw_errors:rate5m
+        expr: sum(rate({job="fluentbit", log_type="error"}[5m])) by (instance)
