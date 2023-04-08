@@ -1,0 +1,4 @@
+basic_auth_users:
+    admin: $2b$12$HYLVMTMy/PNGli7YIweheOfvktFi6.UEPql5F4FyHZ4kUNM5JpHlK
+    mon: $2b$12$HYLVMTMy/PNGli7YIweheOfvktFi6.UEPql5F4FyHZ4kUNM5JpHlK
+    loki: $2b$12$HYLVMTMy/PNGli7YIweheOfvktFi6.UEPql5F4FyHZ4kUNM5JpHlK
