@@ -99,7 +99,6 @@ frontend:
   # downstream_url: ${FRONTEND_DOWNSTREAM_URL}
   max_outstanding_per_tenant: 4096
 
-cod
 compactor:
   working_directory: /loki/compactor
   shared_store: filesystem
@@ -123,6 +122,7 @@ ruler:
     enabled: true
     client:
       url: http://prometheus:9090/api/v1/write
-      # basic_auth:
-      #   username: loki
-      #   password: password
+      basic_auth:
+        username: loki
+        password: admin123
+          #password: $2b$12$HYLVMTMy/PNGli7YIweheOfvktFi6.UEPql5F4FyHZ4kUNM5JpHlK
