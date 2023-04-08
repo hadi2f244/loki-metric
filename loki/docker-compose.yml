@@ -1,55 +1,68 @@
-version: "3"
-
-# networks:
-#   loki:
+---
+version: '3'
 
 volumes:
-    loki_data: {}
+  consul_data:
+    name: lk_consul_data
+    # external: true
+  loki_data:
+    name: loki_data
+    # external: true
+  nginx_data: {}
 
 services:
-  loki:
-    image: grafana/loki:2.7.3
-    volumes:
-      - ./config:/etc/loki/
-      - ./rules:/etc/loki/rules/fake
-      - loki_data:/loki
-    ports:
-      - "3100:3100"
-    command: "-config.file=/etc/loki/loki.yml"
 
-  promtail:
-    image: grafana/promtail:2.7.3
-    volumes:
-      - /var/log:/var/log
-    command: -config.file=/etc/promtail/config.yml
-
-  # grafana:
-  #   environment:
-  #     - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
-  #     - GF_AUTH_ANONYMOUS_ENABLED=true
-  #     - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-  #   entrypoint:
-  #     - sh
-  #     - -euc
-  #     - |
-  #       mkdir -p /etc/grafana/provisioning/datasources
-  #       cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
-  #       apiVersion: 1
-  #       datasources:
-  #       - name: Loki
-  #         type: loki
-  #         access: proxy
-  #         orgId: 1
-  #         url: http://loki:3100
-  #         basicAuth: false
-  #         isDefault: true
-  #         version: 1
-  #         editable: false
-  #       EOF
-  #       /run.sh
-  #   image: grafana/grafana:latest
+  # # Loki gateway
+  # loki-nginx:
+  #   image: nginx
   #   ports:
-  #     - "3000:3000"
-  #   networks:
-  #     - loki
+  #     - 3101:3101
+  #   volumes:
+  #     - ./configs/loki-nginx/default.conf:/etc/nginx/conf.d/default.conf
 
+  consul:
+    image: docker-hub-repos.myket.ir/consul:1.15
+    volumes:
+      - consul_data:/consul/data
+      # - ./configs/consul/config.json:/consul/config/config.json:ro
+    environment:
+      CONSUL_BIND_INTERFACE: eth0
+    expose:
+      - 8500
+    restart: unless-stopped
+
+
+  redis:
+    image: docker-hub-repos.myket.ir/redis:6-alpine
+    expose:
+      - 6379
+    restart: unless-stopped
+
+
+  loki:
+    image: docker-hub-repos.myket.ir/grafana/loki:2.5.0
+    volumes:
+      - ./configs/loki:/etc/loki
+      - ./configs/loki/rules:/tmp/loki/rules/fake:ro
+      - loki_data:/loki
+    command: -config.expand-env -config.file=/etc/loki/loki.yml
+    env_file:
+      - ./configs/.loki.env
+    depends_on:
+      - consul
+      - redis
+    ports:
+      - 3100:3100
+    restart: unless-stopped
+
+
+#  promtail:
+#    image: grafana/promtail:2.2.1
+#    container_name: promtail
+#    volumes:
+#      - ./configs/promtail:/etc/promtail
+#      - /var/log:/var/log
+#    command: -config.file=/etc/promtail/config.yml
+#    networks:
+#      - loki
+#    restart: always

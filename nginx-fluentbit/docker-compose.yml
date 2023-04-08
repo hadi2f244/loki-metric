@@ -4,6 +4,14 @@ volumes:
     nginx_data: {}
 
 services:
+
+  promtail:
+    image: grafana/promtail:2.7.3
+    volumes:
+      - "./config/promtail:/etc/promtail/"
+      - nginx_data:/var/log/nginx/
+    command: -config.file=/etc/promtail/config.yml
+
   fluentbit:
     hostname: fluentbit
     image: fluent/fluent-bit:2.0.8-debug
